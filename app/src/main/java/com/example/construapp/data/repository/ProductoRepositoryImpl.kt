@@ -16,6 +16,9 @@ class ProductoRepositoryImpl @Inject constructor(
     override fun observarProductos(): Flow<List<Producto>> =
         dao.observarTodos().map { lista -> lista.map { it.toDomain() } }
 
+    override fun observarPorId(id: Long): Flow<Producto?> =
+        dao.observarPorId(id).map { it?.toDomain() }
+
     override suspend fun obtenerPorId(id: Long): Producto? =
         dao.obtenerPorId(id)?.toDomain()
 

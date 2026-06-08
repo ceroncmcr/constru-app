@@ -17,6 +17,9 @@ interface ProductoDao {
     @Query("SELECT * FROM productos WHERE id = :id")
     suspend fun obtenerPorId(id: Long): ProductoEntity?
 
+    @Query("SELECT * FROM productos WHERE id = :id")
+    fun observarPorId(id: Long): Flow<ProductoEntity?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertar(producto: ProductoEntity): Long
 
