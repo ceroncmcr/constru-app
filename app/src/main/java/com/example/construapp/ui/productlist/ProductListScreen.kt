@@ -22,6 +22,8 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -68,8 +70,11 @@ fun ProductListScreen(
             }
         }
     ) { padding ->
-        if (state.productos.isEmpty()) {
-            EmptyListPlaceholder(modifier = Modifier.padding(padding))
+        if (state.productos.isEmpty() && state.busqueda.isBlank()) {
+            EmptyListPlaceholder(
+                modifier = Modifier.padding(padding),
+                onAgregar = onAgregar
+            )
         } else {
             ListadoConProductos(
                 padding = padding,
@@ -114,10 +119,7 @@ private fun ListadoConProductos(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
-        // Lista
-        val filtrados = if (busqueda.isBlank()) productos
-        else productos.filter { it.nombre.contains(busqueda, ignoreCase = true) }
-
+        // Lista (ya filtrada en el ViewModel)
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -125,7 +127,7 @@ private fun ListadoConProductos(
             verticalArrangement = Arrangement.spacedBy(10.dp),
             contentPadding = PaddingValues(bottom = 96.dp) // espacio para FAB
         ) {
-            items(filtrados, key = { it.id }) { producto ->
+            items(productos, key = { it.id }) { producto ->
                 ProductCard(producto = producto, onClick = { onProductoClick(producto.id) })
             }
         }
@@ -230,7 +232,10 @@ private fun formatPrice(precio: Double): String {
 }
 
 @Composable
-private fun EmptyListPlaceholder(modifier: Modifier = Modifier) {
+private fun EmptyListPlaceholder(
+    onAgregar: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -242,10 +247,21 @@ private fun EmptyListPlaceholder(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "Pulsa “+” para crear el primero.",
+                text = "Aún no tienes productos en el inventario.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Spacer(Modifier.height(20.dp))
+            Button(
+                onClick = onAgregar,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Registrar producto", fontWeight = FontWeight.SemiBold)
+            }
         }
     }
 }
