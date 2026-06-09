@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +35,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.construapp.ui.components.ConstruAppTopBar
 import com.example.construapp.ui.theme.DangerRed
 import com.example.construapp.ui.theme.SuccessGreen
@@ -42,13 +45,17 @@ import com.example.construapp.ui.theme.WarningAmber
 @Composable
 fun DashboardScreen(
     onVerProductos: () -> Unit,
-    onAgregarProducto: () -> Unit
+    onAgregarProducto: () -> Unit,
+    viewModel: DashboardViewModel = hiltViewModel()
 ) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
     Scaffold(
         topBar = { ConstruAppTopBar(title = "ConstruApp") }
     ) { padding ->
         DashboardContent(
             paddingValues = padding,
+            state = state,
             onVerProductos = onVerProductos,
             onAgregarProducto = onAgregarProducto
         )
@@ -58,6 +65,7 @@ fun DashboardScreen(
 @Composable
 private fun DashboardContent(
     paddingValues: PaddingValues,
+    state: DashboardUiState,
     onVerProductos: () -> Unit,
     onAgregarProducto: () -> Unit
 ) {
@@ -99,7 +107,7 @@ private fun DashboardContent(
         )
 
         Spacer(Modifier.height(24.dp))
-        StatsBanner()
+        StatsBanner(state = state)
     }
 }
 
@@ -162,7 +170,7 @@ private fun OpcionCard(
 }
 
 @Composable
-private fun StatsBanner() {
+private fun StatsBanner(state: DashboardUiState) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -181,9 +189,9 @@ private fun StatsBanner() {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                StatItem("24", "Productos", MaterialTheme.colorScheme.primary)
-                StatItem("3", "Stock bajo", WarningAmber)
-                StatItem("1", "Sin stock", DangerRed)
+                StatItem(state.total.toString(), "Productos", MaterialTheme.colorScheme.primary)
+                StatItem(state.stockBajo.toString(), "Stock bajo", WarningAmber)
+                StatItem(state.sinStock.toString(), "Sin stock", DangerRed)
             }
         }
     }
