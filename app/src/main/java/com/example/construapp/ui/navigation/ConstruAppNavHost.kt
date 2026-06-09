@@ -69,7 +69,14 @@ fun ConstruAppNavHost(
             ProductFormScreen(
                 productId = null,
                 onBack = { navController.popBackStack() },
-                onGuardado = { navController.popBackStack() }
+                onGuardado = {
+                    // HU03 CA1: tras registrar siempre se vuelve al listado,
+                    // sin importar si se entró desde el Dashboard o desde el FAB.
+                    navController.navigate(Screen.ProductList.route) {
+                        popUpTo(Screen.Dashboard.route) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 

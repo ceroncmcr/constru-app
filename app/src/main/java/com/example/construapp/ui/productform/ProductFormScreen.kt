@@ -24,11 +24,13 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -44,6 +46,7 @@ fun ProductFormScreen(
     viewModel: ProductFormViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     val esEdicion = viewModel.esEdicion
     val titulo = if (esEdicion) "Editar producto" else "Nuevo producto"
     val subtitulo = if (esEdicion) "Modifica los datos del producto" else "Completa los datos del producto"
@@ -110,7 +113,17 @@ fun ProductFormScreen(
             Spacer(Modifier.height(8.dp))
 
             Button(
-                onClick = { viewModel.guardar(onGuardado) },
+                onClick = {
+                    viewModel.guardar {
+                        val mensaje = if (esEdicion) {
+                            "Producto actualizado correctamente"
+                        } else {
+                            "Producto registrado correctamente"
+                        }
+                        Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
+                        onGuardado()
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp)
