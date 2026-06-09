@@ -30,10 +30,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import android.widget.Toast
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,6 +55,7 @@ fun ProductDetailScreen(
     viewModel: ProductDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     var mostrarDialogo by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -110,7 +113,10 @@ fun ProductDetailScreen(
                 TextButton(
                     onClick = {
                         mostrarDialogo = false
-                        viewModel.eliminar(onEliminado)
+                        viewModel.eliminar {
+                            Toast.makeText(context, "Producto eliminado", Toast.LENGTH_SHORT).show()
+                            onEliminado()
+                        }
                     }
                 ) { Text("Eliminar", color = DangerRed) }
             },
